@@ -11,11 +11,11 @@ channel.prefetch(1);
 ```
 Define o tamanho do lote de mensagens que será capturado da fila.
 
-Um valor muito baixo causará constantes solicitações do consumer ao rabbitMQ para obter mais mensagens, 
-diminuindo o throughput da fila devido ao tempo de comunicação. O baixo throughput também pode fazer com que atinja o 
+Um valor muito baixo causará constantes solicitações do _consumer_ ao _rabbitMQ_ para obter mais mensagens, 
+diminuindo o _throughput_ da fila devido ao tempo de comunicação. O baixo _throughput_ pode fazer com que atinja o 
 [limite de mensagens suportado pela fila](https://www.rabbitmq.com/maxlength.html).
 
-Um valor muito alto pode dificultar o escalonamento de consumers numa fila, pois muitas mensagens já estariam alocadas num único consumer.
+Um valor muito alto pode dificultar o escalonamento de consumers numa fila, pois muitas mensagens já estariam alocadas num único _consumer_.
 
 Mais detalhes: 
 - https://youtu.be/bDzi4xMPZ-8?t=229
@@ -33,7 +33,7 @@ channel.assertQueue('MAIL_USER_WELCOME_QUEUE', {
             }
         });
 ```
-Define na Queue, qual a `Exchange` e a `Routing Key` que deve ser usada para realocar uma mensagem quando ela sofrer um `nack()` ou `reject()` removendo-a da fila.
+Define na _Queue_, qual a _Exchange_ e a _Routing Key_ que deve ser usada para realocar uma mensagem quando ela sofrer um `nack()` ou `reject()` removendo-a da fila.
 ``` javascript
 const recolocarMensagemNaFila = false;
 channel.nack(msg, recolocarMensagemNaFila); //nack() quando houver erro no processamento
@@ -55,7 +55,7 @@ channel.assertQueue(QUEUE_NAME, {
         });
 ```
 
-É um argumento adicionado na definição da queue, possibilitando que apenas 1 consumer possa se conectar na queue.
+É um argumento adicionado na definição da _queue_, possibilitando que apenas 1 _consumer_ possa se conectar na fila.
 
 Ideal para quando a ordem de processamento das mensagens é um critério importante.
 
@@ -75,11 +75,11 @@ Mais detalhes: https://www.rabbitmq.com/consumers.html#single-active-consumer
 
 ## Dúvidas:
 
-### 1) Quando já existe uma queue/exchange, como faço editá-la sem perder as mensagens? Exemplo, já existe uma queue em produção, mas agora eu preciso adicionar um argumento definindo a `x-dead-letter-exchange`ou alterar a durabilidade da queue.
+### 1) Quando já existe uma _queue/exchange_, como faço editá-la sem perder as mensagens? Exemplo, já existe uma queue em produção, mas agora eu preciso adicionar um argumento definindo a `x-dead-letter-exchange` ou alterar a durabilidade da _queue_.
 ???
 
-### 2) Quando o processamento de uma mensagem sofre um `nack` ou `reject` ela é retorna para a queue, mas é retornada para o final da queue?
-Não, o rabbit TENTARÁ colocar a mensagem na posição original ou o mais próximo possível, porém, se o `prefetch` do consumer estiver maior que 1, 
+### 2) Quando o processamento de uma mensagem sofre um `nack()` ou `reject()` ela é retorna para a queue, mas é retornada para o final da queue?
+Não, o rabbit TENTARÁ colocar a mensagem na posição original ou o mais próximo possível, porém, se o _prefetch_ do consumer estiver maior que 1, 
 pode ser que perceba que mensagens mais antigas sejam processadas antes da mensagem que foi reenviada para a fila, 
 pois estas estavam na memória no consumer.
 
@@ -88,14 +88,14 @@ Mais detalhes: https://www.rabbitmq.com/confirms.html#consumer-nacks-requeue
 
 ### 3) É possível atualizar os dados do corpo da mensagem já enviada? Como deve ser o procedimento nos casos de mensagens com formatos inválidos?
 `Pesquisar mais:` Aparentemente não é possível, neste caso deverá adequar o consumer para tratar essa particularidade ou criar uma nova fila,  
-mover as mensagens para ela, depois criar um consumer para ajustar as mensagem e recolocá-las na fila anterior.  
+mover as mensagens para ela, depois criar um _consumer_ para ajustar as mensagem e recolocá-las na fila anterior.  
 
 ### 4) Como garantir que apenas 1 consumer seja utilizado em uma Queue?
-Usando o argumento `x-single-active-consumer: true` na definição da queue.
+Usando o argumento `x-single-active-consumer: true` na definição da _queue_.
 
 Mais detalhes: https://www.rabbitmq.com/consumers.html#single-active-consumer
 
 ### 5) Tenho várias aplicações, como eu posso separar as exchanges e queues de cada aplicação?
-É possível organizar através da criação de um Virtual Host representando cada aplicação, e nela criar as exchanges e queues.
+É possível organizar através da criação de um _Virtual Host_ representando cada aplicação, e nela criar as _exchanges_ e _queues_.
 
 Mais detalhes: https://www.rabbitmq.com/vhosts.html
